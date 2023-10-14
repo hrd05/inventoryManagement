@@ -32,7 +32,7 @@ function showItem(item) {
     childElement.innerHTML = `Item Name: <b>${item.itemName}</b>       
      Description: <b>${item.description}</b>  
      Price: <b>Rs ${item.price}</b>  
-     Quantity: <b>${item.quantity}</b>`;
+     Quantity: <strong>${item.quantity}</strong>`;
 
     const btn1 = document.createElement('button');
     const btn2 = document.createElement('button');
@@ -65,11 +65,12 @@ function handleBuyClick(item, quantityToBuy) {
         const newQuantity = currentQuantity - quantityToBuy;
         if (newQuantity >= 0) {
             currentItem.setAttribute('data-quantity', newQuantity);
-            currentItem.querySelector('b').textContent = newQuantity; // Update the displayed quantity
+            currentItem.querySelector('strong').textContent = newQuantity; // Update the displayed quantity
             // Make a PUT request to update the quantity on the server
             axios.put(`http://localhost:4000/inventory/${item.id}`, { quantity: newQuantity })
                 .then(response => {
                     // Handle the response if needed
+                    
                 })
                 .catch(err => console.log(err));
         }
