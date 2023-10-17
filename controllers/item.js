@@ -29,8 +29,8 @@ exports.postItem = (req, res, next) => {
         quantity
     })
     .then((item) => {
-        //res.status(201)
-        res.redirect('/');
+        res.status(201).json(item);
+        //  
     })
     .catch(err => console.log(err));
 };
@@ -45,18 +45,17 @@ exports.updateItemQuantity = (req, res, next) => {
                 return res.status(404).json({ message: 'Item not found' });
             }
 
-            // Update the quantity of the item
             item.quantity = newQuantity;
-
-            // Save the changes to the database
             return item.save();
         })
-        .then(() => {
-            res.status(200).json({ message: 'Item quantity updated successfully' });
+        .then((item) => {
+            res.status(200).json(item);
+            console.log(item);
+            console.log('into put');
+            //res.redirect('/');
         })
         .catch(err => {
             console.error(err);
-            res.status(500).json({ message: 'Error updating item quantity' });
         });
 };
 

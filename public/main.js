@@ -15,8 +15,8 @@ function saveToDb(event){
 
     axios.post("http://localhost:4000/inventory", Inventory)
     .then((item) => {
-        //showItem(item);
-        console.log(item);
+        showItem(item.data);
+        //console.log(item);
     })
     .catch(err => console.log(err));
 
@@ -28,53 +28,54 @@ function showItem(item) {
     const parentElement = document.getElementById('item-list');
     const childElement = document.createElement('li');
     childElement.className = 'list-group-item';
-    childElement.setAttribute('data-quantity', item.quantity); // Add data-quantity attribute
+    //childElement.setAttribute('data-quantity', item.quantity); // Add data-quantity attribute
     childElement.innerHTML = `Item Name: <b>${item.itemName}</b>       
      Description: <b>${item.description}</b>  
      Price: <b>Rs ${item.price}</b>  
-     Quantity: <strong>${item.quantity}</strong>`;
+     Quantity: <strong id="item-quantity-${item.id}">${item.quantity}</strong>`;
 
     const btn1 = document.createElement('button');
     const btn2 = document.createElement('button');
     const btn3 = document.createElement('button');
 
-    btn1.className = 'btn btn-primary btn-sm mr-2';
-    btn2.className = 'btn btn-primary btn-sm mr-2';
-    btn3.className = 'btn btn-primary btn-sm ';
+    btn1.className = 'btn btn-sm btn-primary float-end';
+    btn2.className = 'btn btn-sm btn-primary float-end mx-2';
+    btn3.className = 'btn btn-sm btn-primary float-end';
 
     btn1.textContent = 'BUY 1';
     btn2.textContent = 'BUY 2';
     btn3.textContent = 'BUY 3';
 
     // Add click event listeners to the buttons
-    btn1.addEventListener('click', () => handleBuyClick(item, 1));
-    btn2.addEventListener('click', () => handleBuyClick(item, 2));
-    btn3.addEventListener('click', () => handleBuyClick(item, 3));
+    btn1.addEventListener('click', () => handleQuantity(item, 1));
+    btn2.addEventListener('click', () => handleQuantity(item, 2));
+    btn3.addEventListener('click', () => handleQuantity(item, 3));
 
-    childElement.appendChild(btn1);
-    childElement.appendChild(btn2);
     childElement.appendChild(btn3);
+    childElement.appendChild(btn2);
+    childElement.appendChild(btn1);    
+    
     parentElement.appendChild(childElement);
 }
 
-// Function to handle Buy button clicks
-function handleBuyClick(item, quantityToBuy) {
-    const currentItem = document.querySelector(`[data-quantity="${item.quantity}"]`);
-    if (currentItem) {
-        const currentQuantity = currentItem.getAttribute('data-quantity');
-        const newQuantity = currentQuantity - quantityToBuy;
-        if (newQuantity >= 0) {
-            currentItem.setAttribute('data-quantity', newQuantity);
-            currentItem.querySelector('strong').textContent = newQuantity; // Update the displayed quantity
-            // Make a PUT request to update the quantity on the server
-            axios.put(`http://localhost:4000/inventory/${item.id}`, { quantity: newQuantity })
-                .then(response => {
-                    // Handle the response if needed
-                    
-                })
-                .catch(err => console.log(err));
-        }
-    }
+// function handling quantity
+
+function handleQuantity(item, quantityToBuy) {
+    const id = item.id;
+    let newQuantity;
+
+    newQuantity = item.quantity - quantityToBuy;
+    //console.log(item.quantity , newQuantity);    
+  
+    axios.put(`http://localhost:4000/inventory/${id}`, {quantity: newQuantity})
+    .then((response) => {
+        //console.log(item.data.id);
+        item.quantity = response.data.quantity;
+        document.querySelector(`#item-quantity-${id}`).textContent = `${response.data.quantity}`;
+        
+        //console.log(res);
+    })  
+    .catch(err => console.log(err));
 }
 
 
@@ -87,5 +88,4 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     })
     .catch(err => console.log(err));
-})
-
+});
